@@ -43,14 +43,16 @@ docsearch = PineconeVectorStore.from_existing_index(
 retriever = docsearch.as_retriever(
     search_type="mmr",
     search_kwargs={
-        "k": 4,
-        "fetch_k": 15
+        "k": 3,
+        "fetch_k":10
     }
 )
 
 # Ollama Model
 model = ChatOllama(
-    model="mistral"
+    model="mistral",
+    temperature=0.3,
+    num_predict=120
 )
 
 # Prompt
@@ -72,6 +74,25 @@ rag_chain = create_retrieval_chain(
 
 # Function for FastAPI
 def get_rag_response(query: str):
+
+    query_lower = query.lower().strip()
+
+    # Instant replies
+
+    greetings = ["hi", "hello", "hey", "hii", "helo"]
+    thanks = ["thanks", "thank you", "thx"]
+    bye_words = ["bye", "goodbye", "see you"]
+
+    if query_lower in greetings:
+        return "Hello! How can I help you with your health concerns today?"
+
+    if query_lower in thanks:
+        return "You're welcome! Take care and stay healthy."
+
+    if query_lower in bye_words:
+        return "Goodbye! Wishing you good health."
+
+    # AI response
 
     response = rag_chain.invoke({
         "input": query
