@@ -1,10 +1,19 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from routes.query_routes import router
+from fastapi.middleware.cors import CORSMiddleware
 
 from services.rag_service import get_rag_response
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Request Schema
 class QueryRequest(BaseModel):
