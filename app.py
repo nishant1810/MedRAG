@@ -19,7 +19,7 @@ os.environ["HF_TOKEN"] = os.getenv("HF_TOKEN")
 
 embedding= download_embeddings()
 
-index_name= "medical-chatbot"
+index_name= "medrag"
 
 docsearch= PineconeVectorStore.from_existing_index(
     index_name= index_name,
