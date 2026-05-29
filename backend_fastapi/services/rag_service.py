@@ -26,7 +26,10 @@ load_dotenv()
 # API Keys
 PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
 # OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-os.environ["HF_TOKEN"] = os.getenv("HF_TOKEN")
+hf_token = os.getenv("HF_TOKEN")
+
+if hf_token:
+    os.environ["HF_TOKEN"] = hf_token
 
 # Embeddings
 embedding = download_embeddings()
@@ -43,16 +46,22 @@ docsearch = PineconeVectorStore.from_existing_index(
 retriever = docsearch.as_retriever(
     search_type="mmr",
     search_kwargs={
-        "k": 3,
-        "fetch_k":10
+        "k": 2,
+        "fetch_k":5
     }
 )
 
 # Ollama Model
+OLLAMA_BASE_URL = os.getenv(
+    "OLLAMA_BASE_URL",
+    "http://localhost:11434"
+)
+
 model = ChatOllama(
-    model="mistral",
+    model="phi3",
+    base_url=OLLAMA_BASE_URL,
     temperature=0.3,
-    num_predict=120
+    num_predict=80
 )
 
 # Prompt

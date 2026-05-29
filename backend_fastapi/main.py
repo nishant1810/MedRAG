@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from routes.query_routes import router
+from backend_fastapi.routes.query_routes import router
 from fastapi.middleware.cors import CORSMiddleware
 
-from services.rag_service import get_rag_response
+from backend_fastapi.services.rag_service import get_rag_response
 
 app = FastAPI()
 

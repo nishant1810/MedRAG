@@ -1,8 +1,9 @@
 # MedRAG – Intelligent Medical Question Answering System
 
-MedRAG is an AI-powered **Retrieval-Augmented Generation (RAG) medical chatbot** that answers healthcare-related questions using knowledge extracted from medical documents.
+MedRAG is a production-ready AI medical chatbot built using **Retrieval-Augmented Generation (RAG) architecture medical chatbot** .
 
-The system combines **vector search and large language models** to retrieve relevant medical context and generate concise, context-aware responses.
+The system combines vector search and large language models to retrieve relevant medical context and generate concise, context-aware responses.
+
 
 ---
 
@@ -11,7 +12,7 @@ The system combines **vector search and large language models** to retrieve rele
 Large language models often hallucinate when asked domain-specific questions.
 MedRAG solves this by using **retrieval-augmented generation**, where relevant medical documents are retrieved first and then provided to the language model for accurate responses.
 
-The system processes medical PDFs, converts them into semantic embeddings, stores them in a vector database, and retrieves the most relevant information when a user asks a question.
+The system processes medical PDFs, converts them into semantic embeddings using Sentence Transformers, and stores them in Pinecone vector databases for efficient similarity search. When a user submits a medical query, the system retrieves the most relevant contextual information and passes it to the language model to generate concise and reliable answers.
 
 ---
 
@@ -19,15 +20,23 @@ The system processes medical PDFs, converts them into semantic embeddings, store
 
 • Retrieval-Augmented Generation for accurate answers
 
-• Semantic search over medical documents
+• Semantic medical documents search
 
 • Vector database powered by Pinecone
 
 • Context-aware LLM responses
 
-• Modular pipeline for scalable AI applications
+• Local LLM inference using Ollama
 
-• Flask-based conversational interface
+• FastAPI backend APIs
+
+• Dockerized multi-container architecture
+
+• Nginx reverse proxy integration
+
+• Pinecone vector database integration
+
+• Interactive chatbot UI
 
 ---
 
@@ -42,28 +51,33 @@ The system processes medical PDFs, converts them into semantic embeddings, store
 
 # Tech Stack
 
-**Programming**
+**Backend**
 
 * Python
+* FastAPI
+* LangChain
 
 **AI / ML**
 
-* LangChain
+* Ollama
 * HuggingFace Sentence Transformers
-* OpenAI GPT-4o-mini
+* Phi3 / Mistral
 
 **Vector Database**
 
 * Pinecone
 
-**Backend**
-
-* Flask
-
 **Infrastructure Ready**
 
 * Docker containerization
+* Nginx
 * Architecture compatible with cloud deployment
+
+**Frontend**
+
+* HTML
+* Bootstrap
+* JavaScript
 
 ---
 
@@ -71,6 +85,11 @@ The system processes medical PDFs, converts them into semantic embeddings, store
 
 ```
 Medical-Chatbot
+├── backend_fastapi/     # FastAPI backend services
+│         ├── routes/    # API route handlers
+│         ├── schemas/   # Request/response schemas
+│         ├── services/  # RAG and AI service logic
+│         └── main.py    # FastAPI application entry point
 │
 ├── Data/                # Medical knowledge PDFs
 ├── src/
@@ -80,6 +99,12 @@ Medical-Chatbot
 ├── templates/
 │   └── chat.html        # Chat interface
 │
+├── nginx/ 
+│     └── nginx.conf     # Nginx reverse proxy
+configuration
+│ 
+├── Dockerfile           # Docker image configuration
+├── docker-compose.yml   # Multi-container orchestration
 ├── store_index.py       # Vector index creation
 ├── app.py               # Flask application
 ├── requirements.txt
@@ -90,29 +115,29 @@ Medical-Chatbot
 
 # Pipeline
 
-### 1. Document Ingestion
+### 1. Document Processing
 
-Medical PDFs are loaded and processed.
+Medical PDFs are loaded and processed into text chunks.
 
-### 2. Text Chunking
+### 2. Embedding Generation
 
-Documents are split into smaller context chunks for efficient retrieval.
+Chunks are converted into semantic embeddings using Sentence Transformers.
 
-### 3. Embedding Generation
+### 3. Vector Storage
 
-Chunks are converted into vector embeddings using Sentence Transformers.
+Embeddings are stored in Pinecone for similarity search.
 
-### 4. Vector Indexing
+### 4. Query Retrieval
 
-Embeddings are stored in Pinecone for fast similarity search.
+Relevant context is retrieved based on user queries.
 
-### 5. Retrieval
+### 5. LLM Response Generation
+
+Retrieved context is passed to the LLM to generate accurate medical responses.
+
+### 6. Retrieval
 
 Relevant document chunks are retrieved based on the user query.
-
-### 6. LLM Response Generation
-
-The retrieved context is passed to the OpenAI model to generate a final answer.
 
 ---
 
@@ -134,12 +159,12 @@ Common symptoms of diabetes include increased thirst, frequent urination, fatigu
 
 # Future Improvements
 
-* Add medical knowledge reranking for improved retrieval quality
+* Add response streaming for real-time AI output
 * Integrate clinical datasets for broader coverage
-* Implement user conversation memory
-* Deploy using containerized cloud infrastructure
-* Add monitoring and evaluation for RAG performance
-
+* Implement JWT-based user authentication
+* Add conversation history and memory support
+* Deploy using Kubernetes and cloud infrastructure
+* Add monitoring and logging for production systems
 ---
 
 # License

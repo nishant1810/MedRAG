@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
-from schemas.query_schema import QueryRequest
-from services.rag_service import get_rag_response
+from backend_fastapi.schemas.query_schema import QueryRequest
+from backend_fastapi.services.rag_service import get_rag_response
 
 router = APIRouter()
 
