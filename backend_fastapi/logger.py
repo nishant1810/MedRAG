@@ -1,6 +1,10 @@
+import os
 import logging
 
 from logging.handlers import RotatingFileHandler
+
+# Create logs directory automatically
+os.makedirs("logs", exist_ok=True)
 
 # Create logger
 logger = logging.getLogger("medrag_logger")
