@@ -16,77 +16,81 @@ from langchain_pinecone import PineconeVectorStore
 from langchain_ollama import ChatOllama
 
 from langchain_classic.chains import create_retrieval_chain
-from langchain_classic.chains.combine_documents import create_stuff_documents_chain
+from langchain_classic.chains.combine_documents import (
+    create_stuff_documents_chain
+)
 
 from langchain_core.prompts import ChatPromptTemplate
+
 
 # Load environment variables
 load_dotenv()
 
-# API Keys
-PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
-# OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-hf_token = os.getenv("HF_TOKEN")
 
-if hf_token:
-    os.environ["HF_TOKEN"] = hf_token
+def initialize_rag_chain():
 
-# Embeddings
-embedding = download_embeddings()
+    # HuggingFace Token
+    hf_token = os.getenv("HF_TOKEN")
 
-# Pinecone Index
-index_name = "medrag"
+    if hf_token:
+        os.environ["HF_TOKEN"] = hf_token
 
-docsearch = PineconeVectorStore.from_existing_index(
-    index_name=index_name,
-    embedding=embedding
-)
+    # Embeddings
+    embedding = download_embeddings()
 
-# Retriever
-retriever = docsearch.as_retriever(
-    search_type="mmr",
-    search_kwargs={
-        "k": 2,
-        "fetch_k":5
-    }
-)
+    # Pinecone
+    index_name = "medrag"
 
-# Ollama Model
-OLLAMA_BASE_URL = os.getenv(
-    "OLLAMA_BASE_URL",
-    "http://localhost:11434"
-)
+    docsearch = PineconeVectorStore.from_existing_index(
+        index_name=index_name,
+        embedding=embedding
+    )
 
-model = ChatOllama(
-    model="phi3",
-    base_url=OLLAMA_BASE_URL,
-    temperature=0.3,
-    num_predict=80
-)
+    # Retriever
+    retriever = docsearch.as_retriever(
+        search_type="mmr",
+        search_kwargs={
+            "k": 2,
+            "fetch_k": 5
+        }
+    )
 
-# Prompt
-prompt = ChatPromptTemplate.from_messages([
-    ("system", system_prompt),
-    ("human", "{input}")
-])
+    # Ollama
+    OLLAMA_BASE_URL = os.getenv(
+        "OLLAMA_BASE_URL",
+        "http://localhost:11434"
+    )
 
-# RAG Chain
-ques_ans_chain = create_stuff_documents_chain(
-    model,
-    prompt
-)
+    model = ChatOllama(
+        model="phi3",
+        base_url=OLLAMA_BASE_URL,
+        temperature=0.3,
+        num_predict=80
+    )
 
-rag_chain = create_retrieval_chain(
-    retriever,
-    ques_ans_chain
-)
+    # Prompt
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", system_prompt),
+        ("human", "{input}")
+    ])
 
-# Function for FastAPI
+    # Chain
+    ques_ans_chain = create_stuff_documents_chain(
+        model,
+        prompt
+    )
+
+    rag_chain = create_retrieval_chain(
+        retriever,
+        ques_ans_chain
+    )
+
+    return rag_chain
+
+
 def get_rag_response(query: str):
 
     query_lower = query.lower().strip()
-
-    # Instant replies
 
     greetings = ["hi", "hello", "hey", "hii", "helo"]
     thanks = ["thanks", "thank you", "thx"]
@@ -101,7 +105,8 @@ def get_rag_response(query: str):
     if query_lower in bye_words:
         return "Goodbye! Wishing you good health."
 
-    # AI response
+    # Initialize RAG only when needed
+    rag_chain = initialize_rag_chain()
 
     response = rag_chain.invoke({
         "input": query
