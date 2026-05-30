@@ -1,12 +1,29 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
-from backend_fastapi.routes.query_routes import router
+from fastapi import HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-
-from backend_fastapi.services.rag_service import get_rag_response
+from backend_fastapi.logger import logger
+from backend_fastapi.routes.query_routes import router
+from backend_fastapi.auth.auth_routes import router as auth_router
+from backend_fastapi.routes.health_routes import router as health_router
+from backend_fastapi.exception_handler import (
+    global_exception_handler,
+    http_exception_handler
+)
 
 app = FastAPI()
 
+# Exception Handlers
+app.add_exception_handler(
+    Exception,
+    global_exception_handler
+)
+
+app.add_exception_handler(
+    HTTPException,
+    http_exception_handler
+)
+
+# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -15,25 +32,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Request Schema
-class QueryRequest(BaseModel):
-    question: str
-
 # Root Route
 @app.get("/")
 def home():
+
+    logger.info("Home route accessed")
+
     return {
         "message": "MedRAG FastAPI Backend Running"
     }
 
-# Query Route
-@app.post("/query")
-async def query_rag(req: QueryRequest):
-
-    response = get_rag_response(req.question)
-
-    return {
-        "answer": response
-    }
-
+# Query Routes
 app.include_router(router)
+
+# Auth Routes
+app.include_router(auth_router)
+
+# Health Routes
+app.include_router(health_router)
