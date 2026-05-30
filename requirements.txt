@@ -15,4 +15,8 @@ sentence-transformers
 huggingface-hub
 
 pydantic
+python-jose
+passlib[bcrypt]
+
 httpx
+pytest
