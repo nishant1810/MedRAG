@@ -81,7 +81,8 @@ The system processes medical PDFs, converts them into semantic embeddings using 
 
 ---
 
-```md
+# Screenshots
+
 ## MedRAG AI Medical Chat Interface
 
 ![Chat Interface](images/Main-Hero.png)
@@ -115,7 +116,8 @@ The system processes medical PDFs, converts them into semantic embeddings using 
 ## Dockerized Multi-Container Architecture
 
 ![Docker](images/Docker-Infrastructure.png)
-```
+
+---
 
 
 # Project Structure
