@@ -326,3 +326,75 @@ body, html {
 		width: 30px;
 	}
 }
+
+/* ========================= */
+/* AUTH UI */
+/* ========================= */
+
+.auth-container {
+	position: absolute;
+	inset: 0;
+	z-index: 1000;
+	background: rgba(0, 0, 0, 0.75);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	backdrop-filter: blur(8px);
+}
+
+.auth-box {
+	width: 100%;
+	max-width: 400px;
+	padding: 30px;
+	border-radius: 20px;
+	background: rgba(0, 0, 0, 0.45);
+	box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+}
+
+.auth-title {
+	color: white;
+	text-align: center;
+	margin-bottom: 25px;
+	font-weight: bold;
+}
+
+.auth-input {
+	margin-bottom: 15px;
+	background: rgba(255, 255, 255, 0.1) !important;
+	border: none !important;
+	color: white !important;
+	height: 50px;
+}
+
+.auth-input::placeholder {
+	color: rgba(255, 255, 255, 0.6);
+}
+
+.auth-btn {
+	width: 100%;
+	height: 50px;
+	border: none;
+	border-radius: 10px;
+	background: #58cc71;
+	color: white;
+	font-weight: bold;
+	transition: 0.3s;
+}
+
+.auth-btn:hover {
+	opacity: 0.9;
+}
+
+.toggle-auth {
+	margin-top: 15px;
+	text-align: center;
+	color: white;
+	cursor: pointer;
+}
+
+.logout-btn {
+	margin-left: auto;
+	color: white;
+	cursor: pointer;
+	font-size: 18px;
+}

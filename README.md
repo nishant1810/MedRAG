@@ -81,6 +81,43 @@ The system processes medical PDFs, converts them into semantic embeddings using 
 
 ---
 
+```md
+## MedRAG AI Medical Chat Interface
+
+![Chat Interface](images/Main-Hero.png)
+
+---
+
+## JWT Authentication System
+
+![Login System](images/Authentication-System.png)
+
+---
+
+## FastAPI Backend API Documentation
+
+![API Docs](images/Swagger-API.png)
+
+---
+
+## Protected API Authorization
+
+![JWT Auth](images/jwt-auth.png)
+
+---
+
+## AI-Powered Medical Query Response
+
+![Query Response](images/query-response.png)
+
+---
+
+## Dockerized Multi-Container Architecture
+
+![Docker](images/Docker-Infrastructure.png)
+```
+
+
 # Project Structure
 
 ```

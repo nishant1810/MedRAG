@@ -4,29 +4,97 @@
 <head>
 
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Medical Chatbot</title>
 
     <!-- Bootstrap -->
-    <link rel="stylesheet"
-        href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+
+    <link
+        rel="stylesheet"
+        href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+    >
 
     <!-- Font Awesome -->
-    <link rel="stylesheet"
-        href="https://use.fontawesome.com/releases/v5.5.0/css/all.css">
+
+    <link
+        rel="stylesheet"
+        href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
+    >
 
     <!-- jQuery -->
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" type="text/css" href="../static/style.css" />
+
+    <link
+        rel="stylesheet"
+        type="text/css"
+        href="../static/style.css"
+    />
 
 </head>
 
 <body>
 
-    <div class="container-fluid h-100">
+    <!-- ========================= -->
+    <!-- AUTH SCREEN -->
+    <!-- ========================= -->
+
+    <div id="authContainer" class="auth-container">
+
+        <div class="auth-box">
+
+            <h3 id="authTitle" class="auth-title">
+                Login
+            </h3>
+
+            <input
+                type="text"
+                id="username"
+                class="form-control auth-input"
+                placeholder="Username"
+            >
+
+            <input
+                type="password"
+                id="password"
+                class="form-control auth-input"
+                placeholder="Password"
+            >
+
+            <button
+                id="authBtn"
+                class="auth-btn"
+            >
+                Login
+            </button>
+
+            <div
+                id="toggleAuth"
+                class="toggle-auth"
+            >
+                Don't have an account? Signup
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- CHAT SCREEN -->
+    <!-- ========================= -->
+
+    <div
+        id="chatContainer"
+        class="container-fluid h-100"
+        style="display: none;"
+    >
 
         <div class="row justify-content-center h-100">
 
@@ -35,9 +103,10 @@
                 <div class="card">
 
                     <!-- HEADER -->
+
                     <div class="card-header msg_head">
 
-                        <div class="d-flex align-items-center">
+                        <div class="d-flex align-items-center w-100">
 
                             <div class="img_cont">
 
@@ -58,19 +127,34 @@
 
                             </div>
 
+                            <!-- LOGOUT -->
+
+                            <div
+                                id="logoutBtn"
+                                class="logout-btn"
+                            >
+                                <i class="fas fa-sign-out-alt"></i>
+                            </div>
+
                         </div>
 
                     </div>
 
                     <!-- CHAT BODY -->
-                    <div id="messageFormeight" class="card-body msg_card_body">
 
-                    </div>
+                    <div
+                        id="messageFormeight"
+                        class="card-body msg_card_body"
+                    ></div>
 
                     <!-- FOOTER -->
+
                     <div class="card-footer">
 
-                        <form id="messageArea" class="input-group">
+                        <form
+                            id="messageArea"
+                            class="input-group"
+                        >
 
                             <input
                                 type="text"
@@ -106,125 +190,319 @@
 
     </div>
 
-    <script>
+<script>
 
-    $(document).ready(function () {
-        $("#messageArea").on("submit", function (event) {
-            event.preventDefault();
-            var rawText = $("#text").val().trim();
-            // Prevent empty messages
-            if (rawText === "") {
-                return;
-            }
+    let isLogin = true;
 
-            const date = new Date();
+    // =========================
+    // CHECK SAVED TOKEN
+    // =========================
 
-            const hour = date.getHours();
-            const minute = date.getMinutes();
+    const savedToken = localStorage.getItem("token");
 
-            const str_time = hour + ":" + minute;
+    if(savedToken){
 
-            // USER MESSAGE
+        $("#authContainer").hide();
 
-            var userHtml =
-                '<div class="d-flex justify-content-end mb-4">' +
-                    '<div class="msg_cotainer_send">' +
-                        rawText +
-                        '<span class="msg_time_send">' +
-                            str_time +
-                        '</span>' +
-                    '</div>' +
-                    '<div class="img_cont_msg">' +
-                        '<img src="https://i.ibb.co/d5b84Xw/Untitled-design.png" class="user_img_msg">' +
-                    '</div>' +
-                '</div>';
-            $("#text").val("");
-            $("#messageFormeight").append(userHtml);
+        $("#chatContainer").fadeIn(300);
+    }
 
-            // AUTO SCROLL
+    // =========================
+    // TOGGLE LOGIN/SIGNUP
+    // =========================
 
-            $("#messageFormeight").scrollTop(
-                $("#messageFormeight")[0].scrollHeight
+    $("#toggleAuth").click(function(){
+
+        isLogin = !isLogin;
+
+        if(isLogin){
+
+            $("#authTitle").text("Login");
+
+            $("#authBtn").text("Login");
+
+            $("#toggleAuth").text(
+                "Don't have an account? Signup"
             );
 
-            // TYPING INDICATOR
+        } else {
 
-            var typingHtml =
+            $("#authTitle").text("Signup");
 
-                '<div id="typing" class="d-flex justify-content-start mb-4">' +
-                    '<div class="img_cont_msg">' +
-                        '<img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" class="user_img_msg">' +
-                    '</div>' +
-                    '<div class="msg_cotainer typing_animation">' +
-                        'Typing...' +
-                    '</div>' +
-                '</div>';
-            $("#messageFormeight").append(typingHtml);
-            $("#messageFormeight").scrollTop(
-                $("#messageFormeight")[0].scrollHeight
+            $("#authBtn").text("Signup");
+
+            $("#toggleAuth").text(
+                "Already have an account? Login"
             );
+        }
+    });
 
-            // API CALL
+    // =========================
+    // AUTHENTICATION
+    // =========================
 
-            fetch("http://127.0.0.1:8000/query", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
+    $("#authBtn").click(async function(){
+
+        const username = $("#username").val().trim();
+
+        const password = $("#password").val().trim();
+
+        if(!username || !password){
+
+            alert("Please fill all fields");
+
+            return;
+        }
+
+        const endpoint = isLogin
+            ? "http://127.0.0.1:8000/login"
+            : "http://127.0.0.1:8000/signup";
+
+        try{
+
+            const response = await fetch(endpoint,{
+
+                method:"POST",
+
+                headers:{
+                    "Content-Type":"application/json"
                 },
 
                 body: JSON.stringify({
-                    question: rawText
+                    username,
+                    password
                 })
-
-            })
-
-            .then(response => response.json())
-            .then(data => {
-
-                // REMOVE TYPING
-
-                $("#typing").remove();
-
-                // BOT MESSAGE
-
-                var botHtml =
-
-                    '<div class="d-flex justify-content-start mb-4">' +
-                        '<div class="img_cont_msg">' +
-                            '<img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" class="user_img_msg">' +
-                        '</div>' +
-                        '<div class="msg_cotainer">' +
-                            data.answer +
-                            '<span class="msg_time">' +
-                                str_time +
-                            '</span>' +
-                        '</div>' +
-                    '</div>';
-                $("#messageFormeight").append($.parseHTML(botHtml));
-
-                // AUTO SCROLL
-
-                $("#messageFormeight").scrollTop(
-                    $("#messageFormeight")[0].scrollHeight
-                );
-            })
-
-            .catch(error => {
-
-                // REMOVE TYPING
-
-                $("#typing").remove();
-                console.error(error);
-                var errorHtml =
-                    '<div class="d-flex justify-content-start mb-4">' +
-                        '<div class="msg_cotainer">' +
-                            'Something went wrong. Please try again.' +
-                        '</div>' +
-                    '</div>';
-                $("#messageFormeight").append(errorHtml);
             });
-        });
+
+            const data = await response.json();
+
+            // =========================
+            // SIGNUP
+            // =========================
+
+            if(!isLogin){
+
+                alert(data.message);
+
+                isLogin = true;
+
+                $("#authTitle").text("Login");
+
+                $("#authBtn").text("Login");
+
+                $("#toggleAuth").text(
+                    "Don't have an account? Signup"
+                );
+
+                return;
+            }
+
+            // =========================
+            // LOGIN
+            // =========================
+
+            if(data.access_token){
+
+                localStorage.setItem(
+                    "token",
+                    data.access_token
+                );
+
+                $("#authContainer").hide();
+
+                $("#chatContainer").fadeIn(300);
+
+            } else {
+
+                alert(data.message || "Login failed");
+            }
+
+        } catch(error){
+
+            console.error(error);
+
+            alert("Authentication failed");
+        }
     });
+
+    // =========================
+    // LOGOUT
+    // =========================
+
+    $("#logoutBtn").click(function(){
+
+        localStorage.removeItem("token");
+
+        location.reload();
+    });
+
+    // =========================
+    // CHAT
+    // =========================
+
+    $("#messageArea").on("submit", async function(event){
+
+        event.preventDefault();
+
+        const rawText = $("#text").val().trim();
+
+        if(rawText === ""){
+            return;
+        }
+
+        const date = new Date();
+
+        const str_time =
+            date.getHours() +
+            ":" +
+            date.getMinutes();
+
+        // =========================
+        // USER MESSAGE
+        // =========================
+
+        const userHtml =
+
+            '<div class="d-flex justify-content-end mb-4">' +
+
+                '<div class="msg_cotainer_send">' +
+
+                    rawText +
+
+                    '<span class="msg_time_send">' +
+
+                        str_time +
+
+                    '</span>' +
+
+                '</div>' +
+
+                '<div class="img_cont_msg">' +
+
+                    '<img src="https://i.ibb.co/d5b84Xw/Untitled-design.png" class="user_img_msg">' +
+
+                '</div>' +
+
+            '</div>';
+
+        $("#text").val("");
+
+        $("#messageFormeight").append(userHtml);
+
+        $("#messageFormeight").scrollTop(
+            $("#messageFormeight")[0].scrollHeight
+        );
+
+        // =========================
+        // TYPING INDICATOR
+        // =========================
+
+        const typingHtml =
+
+            '<div id="typing" class="d-flex justify-content-start mb-4">' +
+
+                '<div class="img_cont_msg">' +
+
+                    '<img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" class="user_img_msg">' +
+
+                '</div>' +
+
+                '<div class="msg_cotainer typing_animation">' +
+
+                    'Typing...' +
+
+                '</div>' +
+
+            '</div>';
+
+        $("#messageFormeight").append(typingHtml);
+
+        $("#messageFormeight").scrollTop(
+            $("#messageFormeight")[0].scrollHeight
+        );
+
+        try{
+
+            const token = localStorage.getItem("token");
+
+            const response = await fetch(
+                "http://127.0.0.1:8000/query",
+                {
+
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":"application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+
+                    body: JSON.stringify({
+                        question: rawText
+                    })
+                }
+            );
+
+            const data = await response.json();
+
+            $("#typing").remove();
+
+            // =========================
+            // BOT RESPONSE
+            // =========================
+
+            const botHtml =
+
+                '<div class="d-flex justify-content-start mb-4">' +
+
+                    '<div class="img_cont_msg">' +
+
+                        '<img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" class="user_img_msg">' +
+
+                    '</div>' +
+
+                    '<div class="msg_cotainer">' +
+
+                        data.answer +
+
+                        '<span class="msg_time">' +
+
+                            str_time +
+
+                        '</span>' +
+
+                    '</div>' +
+
+                '</div>';
+
+            $("#messageFormeight").append(botHtml);
+
+            $("#messageFormeight").scrollTop(
+                $("#messageFormeight")[0].scrollHeight
+            );
+
+        } catch(error){
+
+            $("#typing").remove();
+
+            console.error(error);
+
+            const errorHtml =
+
+                '<div class="d-flex justify-content-start mb-4">' +
+
+                    '<div class="msg_cotainer">' +
+
+                        'Something went wrong.' +
+
+                    '</div>' +
+
+                '</div>';
+
+            $("#messageFormeight").append(errorHtml);
+        }
+    });
+
 </script>
+
 </body>
 </html>
