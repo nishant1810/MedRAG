@@ -83,27 +83,27 @@ The system processes medical PDFs, converts them into semantic embeddings using 
 
 # Screenshots
 
-## MedRAG AI Medical Chat Interface
-
-![Chat Interface](images/Main-Hero.png)
-
----
-
 ## JWT Authentication System
 
 ![Login System](images/Authentication-System.png)
 
 ---
 
-## FastAPI Backend API Documentation
+## MedRAG AI Medical Chat Interface
 
-![API Docs](images/Swagger-API.png)
+![Chat Interface](images/Main-Hero.png)
 
 ---
 
 ## Protected API Authorization
 
 ![JWT Auth](images/jwt-auth.png)
+
+---
+
+## FastAPI Backend API Documentation
+
+![API Docs](images/Swagger-API.png)
 
 ---
 
