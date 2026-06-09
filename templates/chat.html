@@ -192,11 +192,20 @@
 
 <script>
 
+    // ====================================
+    // BASE URL
+    // ====================================
+
+    const BASE_URL =
+        window.location.hostname === "localhost"
+        ? "http://127.0.0.1:8000"
+        : "https://medrag-hbal.onrender.com";
+
     let isLogin = true;
 
-    // =========================
+    // ====================================
     // CHECK SAVED TOKEN
-    // =========================
+    // ====================================
 
     const savedToken = localStorage.getItem("token");
 
@@ -207,9 +216,9 @@
         $("#chatContainer").fadeIn(300);
     }
 
-    // =========================
+    // ====================================
     // TOGGLE LOGIN/SIGNUP
-    // =========================
+    // ====================================
 
     $("#toggleAuth").click(function(){
 
@@ -237,9 +246,9 @@
         }
     });
 
-    // =========================
+    // ====================================
     // AUTHENTICATION
-    // =========================
+    // ====================================
 
     $("#authBtn").click(async function(){
 
@@ -255,8 +264,8 @@
         }
 
         const endpoint = isLogin
-            ? "http://127.0.0.1:8000/login"
-            : "http://127.0.0.1:8000/signup";
+            ? `${BASE_URL}/login`
+            : `${BASE_URL}/signup`;
 
         try{
 
@@ -276,13 +285,13 @@
 
             const data = await response.json();
 
-            // =========================
+            // ====================================
             // SIGNUP
-            // =========================
+            // ====================================
 
             if(!isLogin){
 
-                alert(data.message);
+                alert(data.message || "Signup successful");
 
                 isLogin = true;
 
@@ -297,9 +306,9 @@
                 return;
             }
 
-            // =========================
+            // ====================================
             // LOGIN
-            // =========================
+            // ====================================
 
             if(data.access_token){
 
@@ -325,9 +334,9 @@
         }
     });
 
-    // =========================
+    // ====================================
     // LOGOUT
-    // =========================
+    // ====================================
 
     $("#logoutBtn").click(function(){
 
@@ -336,9 +345,9 @@
         location.reload();
     });
 
-    // =========================
+    // ====================================
     // CHAT
-    // =========================
+    // ====================================
 
     $("#messageArea").on("submit", async function(event){
 
@@ -355,11 +364,11 @@
         const str_time =
             date.getHours() +
             ":" +
-            date.getMinutes();
+            String(date.getMinutes()).padStart(2, '0');
 
-        // =========================
+        // ====================================
         // USER MESSAGE
-        // =========================
+        // ====================================
 
         const userHtml =
 
@@ -393,9 +402,9 @@
             $("#messageFormeight")[0].scrollHeight
         );
 
-        // =========================
+        // ====================================
         // TYPING INDICATOR
-        // =========================
+        // ====================================
 
         const typingHtml =
 
@@ -426,7 +435,7 @@
             const token = localStorage.getItem("token");
 
             const response = await fetch(
-                "http://127.0.0.1:8000/query",
+                `${BASE_URL}/query`,
                 {
 
                     method:"POST",
@@ -446,9 +455,9 @@
 
             $("#typing").remove();
 
-            // =========================
+            // ====================================
             // BOT RESPONSE
-            // =========================
+            // ====================================
 
             const botHtml =
 
@@ -462,7 +471,7 @@
 
                     '<div class="msg_cotainer">' +
 
-                        data.answer +
+                        (data.answer || "No response received.") +
 
                         '<span class="msg_time">' +
 
@@ -492,7 +501,7 @@
 
                     '<div class="msg_cotainer">' +
 
-                        'Something went wrong.' +
+                        'Server Error or Backend Not Running.' +
 
                     '</div>' +
 
