@@ -13,7 +13,6 @@ from src.helper import download_embeddings
 from src.prompt import *
 
 from langchain_pinecone import PineconeVectorStore
-# from langchain_ollama import ChatOllama
 from langchain_groq import ChatGroq
 
 from langchain_classic.chains import create_retrieval_chain
@@ -23,100 +22,118 @@ from langchain_classic.chains.combine_documents import (
 
 from langchain_core.prompts import ChatPromptTemplate
 
-
-# Load environment variables
 load_dotenv()
 
 
 def initialize_rag_chain():
 
-    # HuggingFace Token
-    hf_token = os.getenv("HF_TOKEN")
+    try:
+        print("STEP 1: Loading HF Token")
 
-    if hf_token:
-        os.environ["HF_TOKEN"] = hf_token
+        hf_token = os.getenv("HF_TOKEN")
 
-    # Embeddings
-    embedding = download_embeddings()
+        if hf_token:
+            os.environ["HF_TOKEN"] = hf_token
 
-    # Pinecone
-    index_name = "medrag"
+        print("STEP 2: Loading Embeddings")
 
-    docsearch = PineconeVectorStore.from_existing_index(
-        index_name=index_name,
-        embedding=embedding
-    )
+        embedding = download_embeddings()
 
-    # Retriever
-    retriever = docsearch.as_retriever(
-        search_type="mmr",
-        search_kwargs={
-            "k": 2,
-            "fetch_k": 5
-        }
-    )
+        print("STEP 3: Connecting Pinecone")
 
-    # Ollama
-    # OLLAMA_BASE_URL = os.getenv(
-    #     "OLLAMA_BASE_URL",
-    #     "http://localhost:11434"
-    # )
+        index_name = "medrag"
 
-    # model = ChatOllama(
-    #     model="phi3",
-    #     base_url=OLLAMA_BASE_URL,
-    #     temperature=0.3,
-    #     num_predict=80
-    # )
+        docsearch = PineconeVectorStore.from_existing_index(
+            index_name=index_name,
+            embedding=embedding
+        )
 
-    model = ChatGroq(
-    groq_api_key=os.getenv("GROQ_API_KEY"),
-    model_name="llama-3.3-70b-versatile",
-    temperature=0.3
-)
+        print("STEP 4: Creating Retriever")
 
-    # Prompt
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", system_prompt),
-        ("human", "{input}")
-    ])
+        retriever = docsearch.as_retriever(
+            search_type="mmr",
+            search_kwargs={
+                "k": 2,
+                "fetch_k": 5
+            }
+        )
 
-    # Chain
-    ques_ans_chain = create_stuff_documents_chain(
-        model,
-        prompt
-    )
+        print("STEP 5: Connecting Groq")
 
-    rag_chain = create_retrieval_chain(
-        retriever,
-        ques_ans_chain
-    )
+        model = ChatGroq(
+            groq_api_key=os.getenv("GROQ_API_KEY"),
+            model_name="llama-3.3-70b-versatile",
+            temperature=0.3
+        )
 
-    return rag_chain
+        print("STEP 6: Creating Prompt")
+
+        prompt = ChatPromptTemplate.from_messages([
+            ("system", system_prompt),
+            ("human", "{input}")
+        ])
+
+        print("STEP 7: Creating QA Chain")
+
+        ques_ans_chain = create_stuff_documents_chain(
+            model,
+            prompt
+        )
+
+        print("STEP 8: Creating Retrieval Chain")
+
+        rag_chain = create_retrieval_chain(
+            retriever,
+            ques_ans_chain
+        )
+
+        print("STEP 9: RAG Chain Ready")
+
+        return rag_chain
+
+    except Exception as e:
+        print(f"INITIALIZATION ERROR: {str(e)}")
+        raise
 
 
 def get_rag_response(query: str):
 
-    query_lower = query.lower().strip()
+    try:
 
-    greetings = ["hi", "hello", "hey", "hii", "helo"]
-    thanks = ["thanks", "thank you", "thx"]
-    bye_words = ["bye", "goodbye", "see you"]
+        query_lower = query.lower().strip()
 
-    if query_lower in greetings:
-        return "Hello! How can I help you with your health concerns today?"
+        greetings = ["hi", "hello", "hey", "hii", "helo"]
+        thanks = ["thanks", "thank you", "thx"]
+        bye_words = ["bye", "goodbye", "see you"]
 
-    if query_lower in thanks:
-        return "You're welcome! Take care and stay healthy."
+        if query_lower in greetings:
+            return "Hello! How can I help you with your health concerns today?"
 
-    if query_lower in bye_words:
-        return "Goodbye! Wishing you good health."
+        if query_lower in thanks:
+            return "You're welcome! Take care and stay healthy."
 
-    # Initialize RAG only when needed
-    rag_chain = initialize_rag_chain()
+        if query_lower in bye_words:
+            return "Goodbye! Wishing you good health."
 
-    response = rag_chain.invoke({
-        "input": query
-    })
+        print("STEP 10: Initializing RAG")
 
-    return response["answer"]
+        rag_chain = initialize_rag_chain()
+
+        print("STEP 11: Invoking Chain")
+
+        response = rag_chain.invoke({
+            "input": query
+        })
+
+        print("STEP 12: Response Generated")
+
+        return response.get(
+            "answer",
+            "No answer generated."
+        )
+
+    except Exception as e:
+        print(f"QUERY ERROR: {str(e)}")
+        raise Exception(
+            f"RAG Pipeline Failed: {str(e)}"
+        )
