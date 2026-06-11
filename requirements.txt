@@ -7,7 +7,7 @@ langchain-core
 langchain-community
 
 langchain-pinecone
-langchain-ollama
+# langchain-ollama
 langchain-groq
 langchain-huggingface
 
