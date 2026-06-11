@@ -13,7 +13,8 @@ from src.helper import download_embeddings
 from src.prompt import *
 
 from langchain_pinecone import PineconeVectorStore
-from langchain_ollama import ChatOllama
+# from langchain_ollama import ChatOllama
+from langchain_groq import ChatGroq
 
 from langchain_classic.chains import create_retrieval_chain
 from langchain_classic.chains.combine_documents import (
@@ -56,17 +57,23 @@ def initialize_rag_chain():
     )
 
     # Ollama
-    OLLAMA_BASE_URL = os.getenv(
-        "OLLAMA_BASE_URL",
-        "http://localhost:11434"
-    )
+    # OLLAMA_BASE_URL = os.getenv(
+    #     "OLLAMA_BASE_URL",
+    #     "http://localhost:11434"
+    # )
 
-    model = ChatOllama(
-        model="phi3",
-        base_url=OLLAMA_BASE_URL,
-        temperature=0.3,
-        num_predict=80
-    )
+    # model = ChatOllama(
+    #     model="phi3",
+    #     base_url=OLLAMA_BASE_URL,
+    #     temperature=0.3,
+    #     num_predict=80
+    # )
+
+    model = ChatGroq(
+    groq_api_key=os.getenv("GROQ_API_KEY"),
+    model_name="llama-3.3-70b-versatile",
+    temperature=0.3
+)
 
     # Prompt
     prompt = ChatPromptTemplate.from_messages([
